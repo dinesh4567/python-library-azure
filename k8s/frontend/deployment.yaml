@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: frontend
+  namespace: library
+  labels:
+    app: frontend
+    tier: frontend
+    project: digital-library
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: frontend
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  template:
+    metadata:
+      labels:
+        app: frontend
+        tier: frontend
+        project: digital-library
+
+    spec:
+      containers:
+      - name: frontend
+
+        image: devsecops1acr.azurecr.io/frontend:v1
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5000
+
+        env:
+        - name: AUTH_SERVICE_URL
+          value: "http://auth-service:5001"
+
+        - name: BOOK_SERVICE_URL
+          value: "http://book-service:5002"
+
+        - name: BORROW_SERVICE_URL
+          value: "http://borrow-service:5003"
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 30
+          periodSeconds: 15
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5000
+          initialDelaySeconds: 10
+          periodSeconds: 10
