@@ -1,0 +1,71 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: book-service
+  namespace: library
+  labels:
+    app: book-service
+    tier: backend
+    project: digital-library
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: book-service
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  template:
+    metadata:
+      labels:
+        app: book-service
+        tier: backend
+        project: digital-library
+
+    spec:
+      containers:
+      - name: book-service
+
+        image: devsecops1acr.azurecr.io/book-service:v1
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5002
+
+        envFrom:
+        - configMapRef:
+            name: app-config
+
+        - secretRef:
+            name: app-secret
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 5002
+          initialDelaySeconds: 30
+          periodSeconds: 15
+
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 5002
+          initialDelaySeconds: 10
+          periodSeconds: 10
