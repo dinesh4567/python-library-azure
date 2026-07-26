@@ -77,5 +77,9 @@ def mybooks():
     res = requests.get(f"{BORROW_URL}/mybooks/{session['user_id']}")
     return render_template("borrow.html", books=res.json())
 
+@app.route("/health")
+def health():
+    return {"status": "UP"}, 200
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
