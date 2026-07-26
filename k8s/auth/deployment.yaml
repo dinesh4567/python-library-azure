@@ -6,6 +6,8 @@ metadata:
   namespace: library
   labels:
     app: auth-service
+    tier: backend
+    project: digital-library
 
 spec:
   replicas: 2
@@ -24,10 +26,13 @@ spec:
     metadata:
       labels:
         app: auth-service
+        tier: backend
+        project: digital-library
 
     spec:
       containers:
       - name: auth-service
+
         image: devsecops1acr.azurecr.io/auth-service:v1
 
         imagePullPolicy: Always
@@ -35,29 +40,18 @@ spec:
         ports:
         - containerPort: 5001
 
-        env:
-        - name: DB_HOST
-          value: mysql
+        envFrom:
+        - configMapRef:
+            name: db-config
 
-        - name: DB_USER
-          value: root
-
-        - name: DB_PASSWORD
-          valueFrom:
-            secretKeyRef:
-              name: mysql-secret
-              key: MYSQL_ROOT_PASSWORD
-
-        - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: mysql-config
-              key: MYSQL_DATABASE
+        - secretRef:
+            name: db-secret
 
         resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
+
           limits:
             cpu: "500m"
             memory: "512Mi"
