@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mysql-config
+  namespace: library
+
+data:
+  MYSQL_DATABASE: librarydb
