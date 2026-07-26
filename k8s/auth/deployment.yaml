@@ -1,5 +1,6 @@
 apiVersion: apps/v1
 kind: Deployment
+
 metadata:
   name: auth-service
   namespace: library
@@ -38,14 +39,8 @@ spec:
         - name: DB_HOST
           value: mysql
 
-        - name: DB_PORT
-          value: "3306"
-
-        - name: DB_NAME
-          valueFrom:
-            configMapKeyRef:
-              name: mysql-config
-              key: MYSQL_DATABASE
+        - name: DB_USER
+          value: root
 
         - name: DB_PASSWORD
           valueFrom:
@@ -53,11 +48,16 @@ spec:
               name: mysql-secret
               key: MYSQL_ROOT_PASSWORD
 
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: mysql-config
+              key: MYSQL_DATABASE
+
         resources:
           requests:
             cpu: "100m"
             memory: "128Mi"
-
           limits:
             cpu: "500m"
             memory: "512Mi"
