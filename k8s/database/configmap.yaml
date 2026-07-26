@@ -1,11 +1,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: db-config
+  name: mysql-config
   namespace: library
 
 data:
-  DB_HOST: mysql
-  DB_PORT: "3306"
-  DB_NAME: digital_library
-  DB_USER: root
+  MYSQL_DATABASE: digital_library
