@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: borrow-service
+  namespace: library
+  labels:
+    app: borrow-service
+    tier: backend
+    project: digital-library
+
+spec:
+  replicas: 2
+
+  selector:
+    matchLabels:
+      app: borrow-service
+
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+
+  template:
+    metadata:
+      labels:
+        app: borrow-service
+        tier: backend
+        project: digital-library
+
+    spec:
+      containers:
+      - name: borrow-service
+
+        image: devsecops1acr.azurecr.io/borrow-service:v1
+
+        imagePullPolicy: Always
+
+        ports:
+        - containerPort: 5003
+
+        envFrom:
+        - configMapRef:
+            name: app-config
+
+        - secretRef:
+            name: app-secret
+
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "500m"
+            memory: "512Mi"
+
+        livenessProbe:
+          tcpSocket:
+            port: 5003
+          initialDelaySeconds: 30
+          periodSeconds: 15
+
+        readinessProbe:
+          tcpSocket:
+            port: 5003
+          initialDelaySeconds: 10
+          periodSeconds: 10
