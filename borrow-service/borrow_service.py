@@ -40,5 +40,9 @@ def my_books(user_id):
     conn.close()
     return jsonify(books)
 
+@app.route("/health")
+def health():
+    return {"status": "UP"}, 200
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5003, debug=True)
