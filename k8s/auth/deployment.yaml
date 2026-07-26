@@ -42,10 +42,10 @@ spec:
 
         envFrom:
         - configMapRef:
-            name: db-config
+            name: app-config
 
         - secretRef:
-            name: db-secret
+            name: app-secret
 
         resources:
           requests:
