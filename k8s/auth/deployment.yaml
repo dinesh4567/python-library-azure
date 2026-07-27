@@ -33,7 +33,7 @@ spec:
       containers:
       - name: auth-service
 
-        image: devsecops1acr.azurecr.io/auth-service:v1
+        image: devsecops1acr.azurecr.io/auth-service:latest
 
         imagePullPolicy: Always
 
