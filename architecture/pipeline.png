@@ -1,0 +1,57 @@
+Developer
+
+↓
+
+Git Push
+
+↓
+
+GitHub
+
+↓
+
+Webhook
+
+↓
+
+Jenkins
+
+↓
+
+Checkout
+
+↓
+
+SonarQube
+
+↓
+
+Quality Gate
+
+↓
+
+Docker Build
+
+↓
+
+Trivy
+
+↓
+
+Azure Login
+
+↓
+
+Push to ACR
+
+↓
+
+Deploy to AKS
+
+↓
+
+kubectl rollout status
+
+↓
+
+Application Running
