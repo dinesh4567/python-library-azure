@@ -30,7 +30,7 @@ spec:
       containers:
       - name: mysql
 
-        image: devsecops1acr.azurecr.io/database:v1
+        image: devsecops1acr.azurecr.io/database:latest
         imagePullPolicy: Always
 
         ports:
