@@ -33,7 +33,7 @@ spec:
       containers:
       - name: frontend
 
-        image: devsecops1acr.azurecr.io/frontend:v1
+        image: devsecops1acr.azurecr.io/frontend:latest
 
         imagePullPolicy: Always
 
