@@ -33,7 +33,7 @@ spec:
       containers:
       - name: borrow-service
 
-        image: devsecops1acr.azurecr.io/borrow-service:v1
+        image: devsecops1acr.azurecr.io/borrow-service:latest
 
         imagePullPolicy: Always
 
