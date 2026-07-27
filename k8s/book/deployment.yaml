@@ -33,7 +33,7 @@ spec:
       containers:
       - name: book-service
 
-        image: devsecops1acr.azurecr.io/book-service:v1
+        image: devsecops1acr.azurecr.io/book-service:latest
 
         imagePullPolicy: Always
 
