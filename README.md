@@ -1,19 +1,28 @@
-Clone the repo 
+# Digital Library Microservices on Azure AKS
 
-docker build -t dbimage database/ <br />
-docker build -t authimage auth/ <br />
-docker build -t bookimage book/ <br />
-docker build -t borrowimage borrow/ <br />
-docker build -t appimage . <br /> <br /> <br /> <br />
+## Technologies
+- Python Flask
+- MySQL
+- Docker
+- Kubernetes
+- Azure Kubernetes Service (AKS)
+- Azure Container Registry (ACR)
+- Jenkins
+- SonarQube
+- Trivy
 
+## Architecture
 
-docker network create mynet <br /> <br /> <br /> <br />
+(insert architecture image)
 
+## CI/CD Pipeline
 
-docker run -d --name db -p 3306:3306 --network mynet dbimage <br />
-docker run -d --name auth_service --network mynet  -p 5001:5001 authimage <br />
-docker run -d --name book_service -p 5002:5002 --network mynet bookimage <br />
-docker run -d --name borrow_service  -p 5003:5003 --network mynet borrowimage <br />
-docker run -d --name frontend  -p 5000:5000 --network mynet  appimage <br /> 
+(insert pipeline image)
 
- 
+## Project Structure
+
+## Deployment Steps
+
+## Screenshots
+
+## Future Improvements
