@@ -9,7 +9,7 @@ COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy service code
-COPY . .
+COPY auth_service.py .
 
 # Default command (will be overridden in docker-compose)
 CMD ["python", "auth_service.py"]
