@@ -1,0 +1,29 @@
+GitHub
+     │
+     ▼
+Jenkins
+     │
+ ┌───┼─────────────┐
+ │   │             │
+ ▼   ▼             ▼
+Sonar Trivy     Docker Build
+         │
+         ▼
+Azure Container Registry
+         │
+         ▼
+AKS Cluster
+         │
+ ┌───────┼────────┐
+ │       │        │
+ ▼       ▼        ▼
+Auth    Book    Borrow
+          │
+          ▼
+      Frontend
+          │
+          ▼
+      Ingress
+          │
+          ▼
+       Internet
