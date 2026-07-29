@@ -1,0 +1,11 @@
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+location            = "France Central"
+resource_group_name = "python-library-rg"
+aks_cluster_name    = "python-library-aks"
+acr_name_prefix     = "pythonlibraryacr"
+
+node_count   = 1
+node_vm_size = "Standard_B2s"
+
+environment = "dev"
