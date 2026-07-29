@@ -1,5 +1,13 @@
 pipeline {
-    agent any
+    environment {
+    ACR_NAME = 'TO_BE_CREATED_BY_TERRAFORM'
+    ACR_LOGIN_SERVER = "${ACR_NAME}.azurecr.io"
+
+    RESOURCE_GROUP = 'python-library-rg'
+    AKS_CLUSTER = 'python-library-aks'
+
+    IMAGE_TAG = "${BUILD_NUMBER}"  
+    }
 
     stages {
         stage('CleanWorkspace') {
@@ -49,21 +57,24 @@ pipeline {
         }
         stage ('Build Images') {
             steps {
-                sh 'docker build -t devsecops1acr.azurecr.io/database:latest ./database'
-                sh 'docker build -t devsecops1acr.azurecr.io/auth-service:latest ./auth-service'
-                sh 'docker build -t devsecops1acr.azurecr.io/book-service:latest ./book-service'
-                sh 'docker build -t devsecops1acr.azurecr.io/borrow-service:latest ./borrow-service'
-                sh 'docker build -t devsecops1acr.azurecr.io/frontend:latest ./frontend'
-                sh 'docker images | grep devsecops1acr'
+                sh '''
+                docker build -t ${ACR_LOGIN_SERVER}/database:${IMAGE_TAG} ./database
+                docker build -t ${ACR_LOGIN_SERVER}/auth-service:${IMAGE_TAG} ./auth-service
+                docker build -t ${ACR_LOGIN_SERVER}/book-service:${IMAGE_TAG} ./book-service
+                docker build -t ${ACR_LOGIN_SERVER}/borrow-service:${IMAGE_TAG} ./borrow-service
+                docker build -t ${ACR_LOGIN_SERVER}/frontend:${IMAGE_TAG} ./frontend
+
+                docker images | grep ${ACR_NAME}
+            '''
             }
         }
         stage ('TrivySCAN') {
             steps {
-                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 devsecops1acr.azurecr.io/database:latest'
-                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 devsecops1acr.azurecr.io/auth-service:latest'
-                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 devsecops1acr.azurecr.io/book-service:latest'
-                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 devsecops1acr.azurecr.io/borrow-service:latest'
-                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 devsecops1acr.azurecr.io/frontend:latest'
+                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ${ACR_LOGIN_SERVER}/database:${IMAGE_TAG}'
+                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ${ACR_LOGIN_SERVER}/auth-service:${IMAGE_TAG}'
+                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ${ACR_LOGIN_SERVER}/book-service:${IMAGE_TAG}'
+                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ${ACR_LOGIN_SERVER}/borrow-service:${IMAGE_TAG}'
+                sh 'trivy image --scanners vuln --severity HIGH,CRITICAL --exit-code 0 ${ACR_LOGIN_SERVER}/frontend:${IMAGE_TAG}'
             }
         }
         stage('Azure Login') {
@@ -83,7 +94,7 @@ pipeline {
 
                 az account show -o table
 
-                az acr login --name devsecops1acr
+                az acr login --name ${ACR_NAME}
                 '''
                 }
             }
@@ -91,14 +102,14 @@ pipeline {
         stage('Push Images to ACR') {
             steps {
             sh '''
-                docker push devsecops1acr.azurecr.io/database:latest
-                docker push devsecops1acr.azurecr.io/auth-service:latest
+                docker push ${ACR_LOGIN_SERVER}/database:${IMAGE_TAG}
+                docker push ${ACR_LOGIN_SERVER}/auth-service:${IMAGE_TAG}
 
-                docker push devsecops1acr.azurecr.io/book-service:latest
+                docker push ${ACR_LOGIN_SERVER}/book-service:${IMAGE_TAG}
 
-                docker push devsecops1acr.azurecr.io/borrow-service:latest
+                docker push ${ACR_LOGIN_SERVER}/borrow-service:${IMAGE_TAG}
 
-                docker push devsecops1acr.azurecr.io/frontend:latest
+                docker push ${ACR_LOGIN_SERVER}/frontend:${IMAGE_TAG}
                 '''
             }
         }
@@ -106,13 +117,27 @@ pipeline {
             steps {
                 sh '''
                 az aks get-credentials \
-                    --resource-group devsecops-rg \
-                    --name devsecopsaks \
+                    --resource-group ${RESOURCE_GROUP} \
+                    --name ${AKS_CLUSTER} \
                     --overwrite-existing
 
                 kubectl config current-context
 
                 kubectl get nodes
+                '''
+            }
+        }
+        stage('Prepare Kubernetes Manifests') {
+            steps {
+                sh '''
+                find k8s -name "deployment.yaml" -type f \
+                    -exec sed -i "s|ACR_LOGIN_SERVER|${ACR_LOGIN_SERVER}|g" {} +
+
+                find k8s -name "deployment.yaml" -type f \
+                    -exec sed -i "s|:latest|:${IMAGE_TAG}|g" {} +
+
+                echo "Updated image references:"
+                grep -R "image:" k8s
                 '''
             }
         }
@@ -133,7 +158,7 @@ pipeline {
 
                 kubectl apply -f k8s/frontend/
 
-                kubectl apply -f k8s/ingress/
+                // kubectl apply -f k8s/ingress/
                 '''
             }
         }
@@ -152,8 +177,10 @@ pipeline {
                 echo "Deployments"
                 kubectl get deployment -n library
 
+                /* 
                 echo "Ingress"
-                kubectl get ingress -n library
+                kubectl get ingress -n library 
+                */
                 '''
             }
         }

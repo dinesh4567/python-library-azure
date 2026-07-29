@@ -1,12 +1,23 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
-import requests
+import os
 
 app = Flask(__name__)
-app.secret_key = "supersecretkey"
+app.secret_key = os.getenv("FLASK_SECRET_KEY", "development-secret-key")
 
-AUTH_URL = "http://auth_service:5001"
-BOOK_URL = "http://book_service:5002"
-BORROW_URL = "http://borrow_service:5003"
+AUTH_URL = os.getenv(
+    "AUTH_SERVICE_URL",
+    "http://auth-service:5001"
+)
+
+BOOK_URL = os.getenv(
+    "BOOK_SERVICE_URL",
+    "http://book-service:5002"
+)
+
+BORROW_URL = os.getenv(
+    "BORROW_SERVICE_URL",
+    "http://borrow-service:5003"
+)
 
 @app.route("/")
 def home():

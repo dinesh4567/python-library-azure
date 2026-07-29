@@ -6,12 +6,12 @@ metadata:
   namespace: library
 
 spec:
+  type: LoadBalancer
+
   selector:
     app: frontend
 
   ports:
   - protocol: TCP
-    port: 5000
+    port: 80
     targetPort: 5000
-
-  type: ClusterIP

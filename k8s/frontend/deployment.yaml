@@ -33,7 +33,7 @@ spec:
       containers:
       - name: frontend
 
-        image: devsecops1acr.azurecr.io/frontend:latest
+        image: ACR_LOGIN_SERVER/frontend:latest
 
         imagePullPolicy: Always
 
@@ -49,6 +49,12 @@ spec:
 
         - name: BORROW_SERVICE_URL
           value: "http://borrow-service:5003"
+        
+                - name: FLASK_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: app-secret
+              key: FLASK_SECRET_KEY
 
         resources:
           requests:
