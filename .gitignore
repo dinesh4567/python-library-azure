@@ -1,0 +1,22 @@
+# Never commit populated Secrets - use the *.example.yaml templates
+k8s/**/secret.yaml
+!k8s/**/secret.example.yaml
+
+# Terraform state and local variables
+terraform/terraform.tfvars
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+crash.log
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# Local tooling
+.vscode/
+.idea/
+*.log

@@ -1,12 +1,21 @@
 pipeline {
+    agent any
+
+    parameters {
+        // Taken from the Terraform output after `terraform apply`.
+        string(name: 'ACR_NAME', defaultValue: '', description: 'Azure Container Registry name (from terraform output)')
+    }
+
     environment {
-    ACR_NAME = 'TO_BE_CREATED_BY_TERRAFORM'
-    ACR_LOGIN_SERVER = "${ACR_NAME}.azurecr.io"
+    ACR_LOGIN_SERVER = "${params.ACR_NAME}.azurecr.io"
 
     RESOURCE_GROUP = 'python-library-rg'
     AKS_CLUSTER = 'python-library-aks'
 
-    IMAGE_TAG = "${BUILD_NUMBER}"  
+    // Azure AD tenant ID is supplied by a Jenkins credential, not committed.
+    AZURE_TENANT_ID = credentials('azure-tenant-id')
+
+    IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
@@ -90,7 +99,7 @@ pipeline {
                 az login --service-principal \
                     --username "$CLIENT_ID" \
                     --password "$CLIENT_SECRET" \
-                    --tenant "f6c19515-e853-499d-b534-fa6e6e59387e"
+                    --tenant "$AZURE_TENANT_ID"
 
                 az account show -o table
 
@@ -158,7 +167,8 @@ pipeline {
 
                 kubectl apply -f k8s/frontend/
 
-                // kubectl apply -f k8s/ingress/
+                # Ingress is not enabled yet - see "Known limitations" in the README.
+                # kubectl apply -f k8s/ingress/
                 '''
             }
         }
@@ -177,10 +187,8 @@ pipeline {
                 echo "Deployments"
                 kubectl get deployment -n library
 
-                /* 
-                echo "Ingress"
-                kubectl get ingress -n library 
-                */
+                # echo "Ingress"
+                # kubectl get ingress -n library
                 '''
             }
         }

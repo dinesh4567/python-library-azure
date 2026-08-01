@@ -49,8 +49,8 @@ spec:
 
         - name: BORROW_SERVICE_URL
           value: "http://borrow-service:5003"
-        
-                - name: FLASK_SECRET_KEY
+
+        - name: FLASK_SECRET_KEY
           valueFrom:
             secretKeyRef:
               name: app-secret
